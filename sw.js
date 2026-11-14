@@ -1,8 +1,8 @@
 // Hosn Obe – Service Worker: macht das Spiel installierbar und ohne Netz spielbar.
 // Die Seite selbst kommt immer frisch aus dem Netz, damit Updates sofort da sind.
 // Nur ohne (oder bei sehr langsamem) Netz springt die gespeicherte Kopie ein.
-const CACHE = 'hob-v1';
-const CORE = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png'];
+const CACHE = 'hob-v2';
+const CORE = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/icon.svg', 'icons/logo.svg'];
 const FONT_CSS = 'https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap';
 const LIBS = [
   'https://cdn.jsdelivr.net/npm/mqtt@5.10.4/dist/mqtt.min.js',

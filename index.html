@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://hosnobe.hef.li/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Hosn Obe – Sau, König und Ober in Herz auf blauem Spieltisch, daneben Kronkorken">
+<meta property="og:image:alt" content="Hosn Obe – eine Spielkarte in Lederhose mit Tirolerhut und Bierkrügerl auf blauem Spieltisch">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "Hosn Obe", "url": "https://hosnobe.hef.li/", "inLanguage": "de"}, {"@context": "https://schema.org", "@type": "VideoGame", "name": "Hosn Obe", "alternateName": ["Schwimmen", "31", "Einunddreißig"], "url": "https://hosnobe.hef.li/", "image": "https://hosnobe.hef.li/og-image.jpg", "inLanguage": "de", "description": "Das Kartenspiel Schwimmen (31) mit Doppeldeutschen Karten: Sammle Punkte in einer Farbe, klopf zur rechten Zeit – und wer am wenigsten hat, verliert einen Kronkorken.", "genre": ["Kartenspiel", "Partyspiel"], "gamePlatform": ["Webbrowser", "Android", "iOS"], "applicationCategory": "GameApplication", "operatingSystem": "Alle (läuft im Browser)", "playMode": ["SinglePlayer", "MultiPlayer"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}]</script>
 <meta name="theme-color" content="#0b3550">
@@ -120,12 +120,8 @@ body.no-idx .badge{display:none}
 /* ---------- Menüs ---------- */
 .page{padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 28px);display:flex;flex-direction:column;gap:14px}
 .logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:4px}
-.fan{position:relative;width:180px;height:118px;--cw:62px;--ch:93px}
-.fan .card{position:absolute;left:50%;top:12px;margin-left:-31px;transform-origin:50% 130%}
-.fan .card:nth-child(1){transform:rotate(-17deg)}
-.fan .card:nth-child(3){transform:rotate(17deg)}
-.fan .card:nth-child(2){transform:translateY(-8px);z-index:2}
-.fan .fan-kk{position:absolute;right:2px;bottom:-4px;width:46px;height:46px;z-index:3;transform:rotate(-14deg);filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.mascot{display:block;width:150px;height:186px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));transform-origin:50% 95%;animation:sway 3.2s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 .title{font-family:var(--display);font-weight:400;font-size:clamp(28px,calc(11vw / var(--z,1)),58px);max-width:100%;color:var(--gold);text-shadow:0 3px 0 #7a4c00,0 7px 16px rgba(0,0,0,.45);letter-spacing:.01em;line-height:1;text-align:center}
 .tagline{color:var(--muted);font-size:15px;text-align:center;max-width:34ch;line-height:1.4}
 .live{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);background:rgba(0,0,0,.2);border-radius:999px;padding:4px 12px 4px 10px;margin-top:2px}
@@ -286,6 +282,7 @@ details.rules[open] summary::after{content:"–"}
 .acts{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:8px}
 .a{height:58px;border-radius:16px;font-weight:900;font-size:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.38);line-height:1.1;transition:transform .08s,filter .2s,opacity .2s;padding:0 4px}
 .a .e{font-size:19px;line-height:1}
+.a small{font-size:10.5px;font-weight:700;opacity:.85}
 .a.all,.a.away{background:linear-gradient(180deg,#38a3e8,#1867b8)}
 .a.pass{background:linear-gradient(180deg,#8796a3,#4f5d69)}
 .a.knock{background:linear-gradient(180deg,#ffd86e,var(--gold-dark));color:var(--gold-ink)}
@@ -401,7 +398,7 @@ details.rules[open] summary::after{content:"–"}
   <section id="screen-home" class="screen">
     <div class="page">
       <div class="logo">
-        <div class="fan" id="fan" aria-hidden="true"></div>
+        <img class="mascot" src="icons/logo.svg" alt="" width="150" height="186">
         <h1 class="title">Hosn Obe</h1>
         <p class="tagline">Schwimmen mit Doppeldeutschen Karten – sammle 31 in einer Farbe, bevor dir die Kronkorken ausgehen.</p>
         <p class="tagline2">Sau, König, Ober – Hosn obe!</p>
@@ -574,8 +571,8 @@ details.rules[open] summary::after{content:"–"}
   <ol class="rules-steps">
     <li><span>Der Geber teilt jedem 3 Karten aus – auch sich selbst. Deine Karten siehst nur du.</span></li>
     <li><span>Der Geber schaut seine Karten an: <b>behalten</b> – dann kommen 3 neue Karten offen in die Mitte. Oder <b>in die Mitte</b> – dann liegen seine Karten offen in der Mitte und er nimmt sich 3 neue.</span></li>
-    <li><span>Reihum bist du dran und machst genau eins: <b>1 Karte tauschen</b> mit der Mitte, <b>alle 3 tauschen</b>, <b>schieben</b> (nix tun) oder <b>klopfen</b>.</span></li>
-    <li><span><b>Klopfen</b> heißt: „Mir reicht's.“ Alle anderen sind noch genau einmal dran, dann wird aufgedeckt.</span></li>
+    <li><span>Reihum bist du dran und machst genau eins: <b>1 Karte tauschen</b> mit der Mitte, <b>alle 3 tauschen</b> oder <b>klopfen</b>. Schieben (aussetzen) gibt's nicht – außer es ist eingestellt, dann einmal pro Runde.</span></li>
+    <li><span><b>Klopfen</b> heißt: „Mir reicht's.“ Alle anderen sind noch genau einmal dran, dann wird aufgedeckt. In der ersten Runde, bevor jeder einmal dran war, darf noch niemand klopfen.</span></li>
     <li><span>Wer am wenigsten Punkte hat, verliert einen Kronkorken. Dann gibt der Nächste.</span></li>
   </ol>
 
@@ -592,7 +589,7 @@ details.rules[open] summary::after{content:"–"}
 
   <h4>Gut zu wissen</h4>
   <ul class="rules-list">
-    <li><b>Alle schieben:</b> Schieben alle hintereinander, kommen 3 neue Karten in die Mitte.</li>
+    <li><b>Alle schieben</b> (wenn Schieben erlaubt ist): Schieben alle hintereinander, kommen 3 neue Karten in die Mitte.</li>
     <li><b>Gleichstand:</b> Haben mehrere gleich wenig, verlieren alle davon einen Kronkorken. Haben alle gleich viel, verliert keiner.</li>
     <li><b>Verdeckte Karte</b> (wenn eingestellt): Der Geber legt zum Schluss eine verdeckte Karte neben die Mitte. Statt einer offenen darfst du sie nehmen, ohne sie zu kennen – deine abgelegte Karte wird die neue verdeckte.</li>
     <li><b>Schwimmen:</b> Hast du keinen Kronkorken mehr, bekommst du Schwimmflügerl und spielst weiter. Verlierst du noch einmal, bist du ertrunken 🫧.</li>
@@ -601,6 +598,8 @@ details.rules[open] summary::after{content:"–"}
   <h4>Einstellen kannst du</h4>
   <ul class="rules-list">
     <li>Kronkorken pro Spieler: 1–5 (normal 3)</li>
+    <li>Schieben: nein (normal) oder einmal pro Runde</li>
+    <li>Klopfen in der ersten Runde: nein (normal) oder ja</li>
     <li>Verdeckte Karte in der Mitte: ja oder nein</li>
     <li>Zehner zählt zur Hosn: ja oder nein. Wenn nein, sind Sau + Zehner + König zwar 31 Punkte, aber keine Hosn – die Runde geht dann weiter.</li>
   </ul>
@@ -1082,14 +1081,17 @@ function capsHTML(p, total, big){
 }
 
 /* ================= Spiel-Engine (läuft auf dem Gerät, das das Spiel leitet) ================= */
-// Einstellbar: Kronkorken pro Spieler, verdeckte Karte in der Mitte, Zehner zählt zur Hosn
-const OPT_DEFAULT = {caps: 3, blind: false, ten: true};
+// Einstellbar: Kronkorken pro Spieler, verdeckte Karte in der Mitte, Zehner zählt zur Hosn,
+// Schieben (einmal pro Runde) und Klopfen schon in der ersten Runde
+const OPT_DEFAULT = {caps: 3, blind: false, ten: true, pass: false, firstKnock: false};
 function gameOpts(o){
   o = o || {};
   return {
     caps: clamp(Math.round(+o.caps || OPT_DEFAULT.caps), 1, 5),
     blind: o.blind === undefined ? OPT_DEFAULT.blind : !!o.blind,
-    ten: o.ten === undefined ? OPT_DEFAULT.ten : !!o.ten
+    ten: o.ten === undefined ? OPT_DEFAULT.ten : !!o.ten,
+    pass: o.pass === undefined ? OPT_DEFAULT.pass : !!o.pass,
+    firstKnock: o.firstKnock === undefined ? OPT_DEFAULT.firstKnock : !!o.firstKnock
   };
 }
 // 32 Karten: Siebener bis Sau
@@ -1128,6 +1130,10 @@ const isAuto = p => !!(p && p.bot);                              // Bot spielt s
 const isAway = p => !!(p && !p.bot && p.online === false);       // offline → nach kurzer Zeit spielt ein Bot für ihn
 const AWAY_GRACE = 8000;                                          // so lange darf man nach einem Abbruch zurückkommen
 const aliveIdx = s => s.players.map((p, i) => inGame(p) ? i : -1).filter(i => i >= 0);
+// Klopfen: einmal pro Runde, und (je nach Einstellung) erst, wenn jeder einmal dran war
+const mayKnock = s => !s.knock && (!!(s.opts && s.opts.firstKnock) || s.turns >= aliveIdx(s).length);
+// Schieben: nur wenn eingestellt, und dann einmal pro Runde
+const mayPass = (s, p) => !!(s.opts && s.opts.pass) && !!p && !p.passed;
 function nextAlive(s, i){
   const n = s.players.length;
   for (let k = 1; k <= n; k++){ const j = (i + k) % n; if (inGame(s.players[j])) return j; }
@@ -1179,7 +1185,7 @@ function startRound(s){
   // Der Geber teilt reihum aus – links von ihm beginnend, sich selbst zuletzt
   const order = [];
   for (let i = nextAlive(s, s.dealer), k = 0; k < s.players.length && !order.includes(i); k++, i = nextAlive(s, i)) order.push(i);
-  s.players.forEach(p => { p.hand = []; p.act = null; });
+  s.players.forEach(p => { p.hand = []; p.act = null; p.passed = false; });
   for (let k = 0; k < 3; k++) order.forEach(i => s.players[i].hand.push(s.deck.pop()));
   order.forEach(i => s.players[i].hv++);
   s.current = s.dealer;
@@ -1207,23 +1213,24 @@ function botTurn(s, i){
   const best = opts[0];
   // Hosn oder Feuer in Reichweite: sofort zugreifen
   if (best && (best.inf.kind === 'feuer' || best.inf.kind === 'hosn')) return best.a;
+  const canPass = mayPass(s, s.players[i]), canKnock = mayKnock(s);
+  // die schwächste Karte, die nicht zur besten Farbe gehört (für einen Blindtausch)
+  const weakest = () => { let h = 0, lo = 99; H.forEach((c, k) => { const w = PTS[c.r] + (c.s === cur.suit ? 20 : 0); if (w < lo){ lo = w; h = k; } }); return h; };
+  // tauschen müssen, obwohl nichts besser wird: das kleinste Übel – oder blind probieren
+  const forced = () => s.blind && best.v < curV - 1e-6 && (smart || Math.random() < .6) ? {type: 'blind', h: weakest()} : best.a;
   // letzte Runde nach dem Klopfen: nur noch verbessern
-  if (s.knock) return best && best.v > curV + 1e-6 ? best.a : {type: 'pass'};
+  if (s.knock) return best.v > curV + 1e-6 ? best.a : canPass ? {type: 'pass'} : forced();
   const alive = aliveIdx(s).length, roundNo = Math.floor(s.turns / Math.max(1, alive)) + 1;
   const pick = !smart && opts.length > 1 && Math.random() < .25 ? opts[1] : best;
-  const gain = pick ? pick.inf.rank - cur.rank : 0;
+  const gain = pick.inf.rank - cur.rank;
   const limit = smart ? [0, 25, 26, 27][Math.min(roundNo, 3)] : 25 + rnd(5);
-  if (cur.rank >= (smart ? 29 : 30) || (gain <= 0 && cur.rank >= limit)) return {type: 'knock'};
-  if (pick && gain > 0) return pick.a;
-  if (smart && pick && pick.v > curV + 1e-6) return pick.a;
+  if (canKnock && (cur.rank >= (smart ? 29 : 30) || (gain <= 0 && cur.rank >= limit))) return {type: 'knock'};
+  if (gain > 0) return pick.a;
+  if (smart && pick.v > curV + 1e-6) return pick.a;
   // schwaches Blatt: mit der verdeckten Karte zocken
-  if (s.blind && cur.rank < (smart ? 15 : 18) && Math.random() < (smart ? .5 : .35)){
-    let h = 0, lo = 99;
-    H.forEach((c, k) => { const w = PTS[c.r] + (c.s === cur.suit ? 20 : 0); if (w < lo){ lo = w; h = k; } });
-    return {type: 'blind', h};
-  }
-  if (s.turns > alive * 12) return {type: 'knock'}; // Notbremse, falls sich alles im Kreis dreht
-  return {type: 'pass'};
+  if (s.blind && cur.rank < (smart ? 15 : 18) && Math.random() < (smart ? .5 : .35)) return {type: 'blind', h: weakest()};
+  if (canKnock && s.turns > alive * 12) return {type: 'knock'}; // Notbremse, falls sich alles im Kreis dreht
+  return canPass ? {type: 'pass'} : forced();
 }
 
 // Was Mitspieler sehen dürfen: fremde Karten und der Stapel bleiben geheim (viewer '*' = alle an einem Gerät)
@@ -1334,11 +1341,12 @@ class Host {
         this.log(() => `🙈 ${p.name} tauscht blind mit der verdeckten Karte`);
         break;
       case 'pass':
-        s.passes++;
+        if (!mayPass(s, p)) return;
+        p.passed = true; s.passes++;
         this.log(() => `👉 ${p.name} schiebt`);
         break;
       case 'knock':
-        if (s.knock) return;
+        if (!mayKnock(s)) return;
         s.knock = {by: i}; s.stats.knocks++;
         this.log(() => `✊ ${p.name} klopft – alle anderen sind noch einmal dran!`);
         break;
@@ -1680,6 +1688,8 @@ function optionsHTML(target){
   const hasBots = st.players.some(p => p.bot);
   return '<h2>Regeln</h2>' + rangeHTML('caps', 'Kronkorken pro Spieler', st.caps) +
     toggleHTML('blind', 'Verdeckte Karte in der Mitte', 'Statt einer offenen darfst du blind die verdeckte nehmen', st.blind) +
+    toggleHTML('pass', 'Schieben erlaubt', st.pass ? 'Jeder darf einmal pro Runde aussetzen' : 'Wer dran ist, muss tauschen oder klopfen', st.pass) +
+    toggleHTML('firstKnock', 'Klopfen in der ersten Runde', st.firstKnock ? 'Darf man gleich beim ersten Zug' : 'Erst, wenn jeder einmal dran war', st.firstKnock) +
     toggleHTML('ten', 'Zehner zählt zur Hosn', st.ten ? 'Sau + Zehner + König einer Farbe ist auch eine Hosn' : 'Nur Sau mit König, Ober oder Unter ist eine Hosn', st.ten) +
     `<div class="sub${hasBots ? '' : ' hidden'}"><h3>Bots</h3><div class="seg" style="--n:2" data-opt="botLevel">${Object.keys(BOT_LEVELS).map(b =>
       `<button data-v="${b}" aria-pressed="${st.botLevel === b}">🤖 ${BOT_LEVELS[b]}<small>${BOT_DESC[b]}</small></button>`).join('')}</div></div>` +
@@ -1709,7 +1719,7 @@ function wireOptions(el, target){
     const key = (grp || b).dataset.opt;
     const st = target === 'host' ? app.lobby : setup;
     if (key === 'idx'){ setIdx(!setup.idx); b.setAttribute('aria-checked', String(setup.idx)); return; }
-    if (key === 'blind' || key === 'ten') st[key] = setup[key] = !st[key];
+    if (['blind', 'ten', 'pass', 'firstKnock'].includes(key)) st[key] = setup[key] = !st[key];
     else if (grp && b.dataset.v) st[key] = setup[key] = b.dataset.v;
     else return;
     if (target === 'host') lobbyChanged();
@@ -1723,7 +1733,9 @@ function nextBotName(list){
   return BOT_NAMES.find(n => !used.has(n)) || `Robo-${list.length + 1}`;
 }
 function rulesHTML(){ return $('#rules-tpl').innerHTML; }
-const optsSummary = o => `${o.caps} Kronkorken · ${o.blind ? 'mit' : 'ohne'} verdeckter Karte · Zehner ${o.ten ? 'zählt' : 'zählt nicht'} zur Hosn`;
+const optsSummary = o => [`${o.caps} Kronkorken`, o.pass ? 'einmal schieben pro Runde' : 'kein Schieben',
+  o.firstKnock ? 'Klopfen sofort erlaubt' : 'kein Klopfen in der ersten Runde', `${o.blind ? 'mit' : 'ohne'} verdeckter Karte`,
+  `Zehner ${o.ten ? 'zählt' : 'zählt nicht'} zur Hosn`].join(' · ');
 
 /* ---------- Start ---------- */
 function loadLocalGame(){
@@ -1749,7 +1761,6 @@ function askResume(icon, info, resumeLabel = '▶︎ Weiterspielen', newLabel = 
   return showModal({icon, title: 'Weiterspielen?', body: `<p>${info}</p>`,
     buttons: [{label: resumeLabel, value: 'resume'}, {label: newLabel, cls: 'btn-ghost', value: 'new'}]});
 }
-$('#fan').innerHTML = [{r: 7, s: 0}, {r: 8, s: 0}, {r: 6, s: 0}].map(c => cardHTML(c)).join('') + '<svg class="fan-kk" viewBox="0 0 40 40"><use href="#kk"/></svg>';
 $('#go-local').onclick = async () => {
   const lg = loadLocalGame();
   if (lg){
@@ -2314,13 +2325,15 @@ const ACT_BTNS = {
 function renderControls(S){
   const a = actorIdx(S), p = a >= 0 ? S.players[a] : null, mine = canAct(S);
   const dealerTurn = S.phase === 'dealer' && mine;
-  const btns = dealerTurn ? ['keep', 'away'] : ['all', 'pass', 'knock'];
+  const btns = dealerTurn ? ['keep', 'away'] : S.opts.pass ? ['all', 'pass', 'knock'] : ['all', 'knock'];
   const acts = $('#acts');
   acts.style.setProperty('--n', btns.length);
   const html = btns.map(k => {
     const [cls, e, label] = ACT_BTNS[k];
-    const on = dealerTurn || (mine && S.phase === 'turn' && !(k === 'knock' && S.knock));
-    return `<button class="a ${cls}" data-act="${k}"${on ? '' : ' disabled'}><span class="e">${e}</span>${label}</button>`;
+    const ok = k === 'knock' ? mayKnock(S) : k === 'pass' ? mayPass(S, p) : true;
+    const on = dealerTurn || (mine && S.phase === 'turn' && ok);
+    const note = dealerTurn || S.phase !== 'turn' ? '' : k === 'pass' && p && p.passed ? 'schon geschoben' : k === 'knock' && !S.knock && !ok ? 'noch nicht' : '';
+    return `<button class="a ${cls}" data-act="${k}"${on ? '' : ' disabled'}><span class="e">${e}</span>${label}${note ? `<small>${note}</small>` : ''}</button>`;
   }).join('');
   if (ui.actsHTML !== html){ ui.actsHTML = html; acts.innerHTML = html; }
   const name = p ? esc(p.name) : '';
@@ -2335,6 +2348,7 @@ function renderControls(S){
     else if (ui.selB) h = '<span>Welche Karte gibst du für die verdeckte her?</span>';
     else h = `<span>Tauschen: tipp eine deiner Karten und eine in der Mitte${blind ? ' (oder die verdeckte)' : ''}.</span>`;
     if (S.knock) h += `<span class="small">✊ Letzte Runde – danach wird aufgedeckt</span>`;
+    else if (!mayKnock(S)) h += '<span class="small">✊ Klopfen geht erst, wenn jeder einmal dran war</span>';
   } else if (coverNeeded(S)) h = `<span>📱 Gib das Handy an <b>${name}</b></span>`;
   else if (p && isAway(p)) h = `<span><b>${name}</b> ist offline</span><span class="small">ein Bot spielt gleich für ${name} …</span>`;
   else if (p && isAuto(p)) h = `<span>🤖 <b>${name}</b> ${S.phase === 'dealer' ? 'schaut die Karten an' : 'überlegt'} …</span>`;
