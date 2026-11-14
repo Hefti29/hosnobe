@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Hosn Obe",
+  "short_name": "Hosn Obe",
+  "description": "Schwimmen (31) mit Doppeldeutschen Karten – rundum an einem Handy, mit Bots oder online mit Freunden.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#072a40",
+  "theme_color": "#0b3550",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

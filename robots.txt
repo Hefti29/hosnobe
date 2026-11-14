@@ -1,0 +1,5 @@
+# Hosn Obe – Suchmaschinen sind willkommen
+User-agent: *
+Allow: /
+
+Sitemap: https://hosnobe.hef.li/sitemap.xml
