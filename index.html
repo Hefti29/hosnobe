@@ -572,7 +572,7 @@ details.rules[open] summary::after{content:"–"}
     <li><span>Der Geber teilt jedem 3 Karten aus – auch sich selbst. Deine Karten siehst nur du.</span></li>
     <li><span>Der Geber schaut seine Karten an: <b>behalten</b> – dann kommen 3 neue Karten offen in die Mitte. Oder <b>in die Mitte</b> – dann liegen seine Karten offen in der Mitte und er nimmt sich 3 neue.</span></li>
     <li><span>Reihum bist du dran und machst genau eins: <b>1 Karte tauschen</b> mit der Mitte, <b>alle 3 tauschen</b> oder <b>klopfen</b>. Schieben (aussetzen) gibt's nicht – außer es ist eingestellt, dann einmal pro Runde.</span></li>
-    <li><span><b>Klopfen</b> heißt: „Mir reicht's.“ Alle anderen sind noch genau einmal dran, dann wird aufgedeckt. In der ersten Runde, bevor jeder einmal dran war, darf noch niemand klopfen.</span></li>
+    <li><span><b>Klopfen</b> heißt: „Mir reicht's.“ Alle anderen sind noch genau einmal dran: Sie tauschen noch – oder klopfen auch und behalten ihre Karten. Dann wird aufgedeckt. In der ersten Runde, bevor jeder einmal dran war, darf noch niemand klopfen.</span></li>
     <li><span>Wer am wenigsten Punkte hat, verliert einen Kronkorken. Dann gibt der Nächste.</span></li>
   </ol>
 
@@ -1050,7 +1050,11 @@ buildCardSprite();
     <radialGradient id="kk-r" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#e8423a"/><stop offset="1" stop-color="#8f1712"/></radialGradient></defs>
     <symbol id="kk" viewBox="0 0 40 40"><path d="${crimp(21, 19.4, 16.6)}" fill="url(#kk-g)" stroke="#6b4b0e" stroke-width="1" stroke-linejoin="round"/>
       <circle cx="20" cy="20" r="14" fill="url(#kk-g)" stroke="#8a6414" stroke-width="1.2"/><circle cx="20" cy="20" r="10.6" fill="url(#kk-r)"/>
-      <path d="M14.5 15.5v9M14.5 20h5M19.5 15.5v9M23 20a3 4.5 0 1 0 6 0a3 4.5 0 1 0-6 0" fill="none" stroke="#ffe7a3" stroke-width="1.6" stroke-linecap="round"/>
+      <g transform="translate(20 20) scale(.86) translate(-20 -20)" stroke="#ffe7a3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15.6 19.4V11.6M24.4 19.4V11.6M15.6 15.2h8.8" fill="none" stroke-width="2"/>
+        <path d="M13.4 19.4h13.2l1.1 8.4h-5.6L20 23.6l-2.1 4.2h-5.6z" fill="#ffe7a3" stroke-width="1"/>
+        <path d="M17.6 21.2h4.8" stroke="#b3261e" stroke-width=".9"/>
+      </g>
       <ellipse cx="15" cy="12.5" rx="4.5" ry="2" fill="#fff" opacity=".45" transform="rotate(-30 15 12.5)"/></symbol>
     <symbol id="wings" viewBox="0 0 40 40">
       <g transform="rotate(-14 12 20)"><rect x="3.5" y="8" width="16" height="24" rx="8" fill="#ff7a1a" stroke="#8a3200" stroke-width="1.4"/><rect x="3.5" y="16.5" width="16" height="7" fill="#fff6e0"/><rect x="3.5" y="8" width="16" height="24" rx="8" fill="none" stroke="#8a3200" stroke-width="1.4"/><ellipse cx="8.5" cy="12.5" rx="2" ry="3" fill="#fff" opacity=".6"/></g>
@@ -1130,8 +1134,9 @@ const isAuto = p => !!(p && p.bot);                              // Bot spielt s
 const isAway = p => !!(p && !p.bot && p.online === false);       // offline → nach kurzer Zeit spielt ein Bot für ihn
 const AWAY_GRACE = 8000;                                          // so lange darf man nach einem Abbruch zurückkommen
 const aliveIdx = s => s.players.map((p, i) => inGame(p) ? i : -1).filter(i => i >= 0);
-// Klopfen: einmal pro Runde, und (je nach Einstellung) erst, wenn jeder einmal dran war
-const mayKnock = s => !s.knock && (!!(s.opts && s.opts.firstKnock) || s.turns >= aliveIdx(s).length);
+// Klopfen: (je nach Einstellung) erst, wenn jeder einmal dran war. Hat schon jemand geklopft, darf jeder
+// in der letzten Runde auch klopfen – er behält dann einfach seine Karten.
+const mayKnock = s => !!s.knock || !!(s.opts && s.opts.firstKnock) || s.turns >= aliveIdx(s).length;
 // Schieben: nur wenn eingestellt, und dann einmal pro Runde
 const mayPass = (s, p) => !!(s.opts && s.opts.pass) && !!p && !p.passed;
 function nextAlive(s, i){
@@ -1219,7 +1224,8 @@ function botTurn(s, i){
   // tauschen müssen, obwohl nichts besser wird: das kleinste Übel – oder blind probieren
   const forced = () => s.blind && best.v < curV - 1e-6 && (smart || Math.random() < .6) ? {type: 'blind', h: weakest()} : best.a;
   // letzte Runde nach dem Klopfen: nur noch verbessern
-  if (s.knock) return best.v > curV + 1e-6 ? best.a : canPass ? {type: 'pass'} : forced();
+  // letzte Runde nach dem Klopfen: verbessern, sonst auch klopfen und die Karten behalten
+  if (s.knock) return best.v > curV + 1e-6 ? best.a : {type: 'knock'};
   const alive = aliveIdx(s).length, roundNo = Math.floor(s.turns / Math.max(1, alive)) + 1;
   const pick = !smart && opts.length > 1 && Math.random() < .25 ? opts[1] : best;
   const gain = pick.inf.rank - cur.rank;
@@ -1347,6 +1353,7 @@ class Host {
         break;
       case 'knock':
         if (!mayKnock(s)) return;
+        if (s.knock){ L.also = true; this.log(() => `✊ ${p.name} klopft auch und behält die Karten`); break; }
         s.knock = {by: i}; s.stats.knocks++;
         this.log(() => `✊ ${p.name} klopft – alle anderen sind noch einmal dran!`);
         break;
@@ -2279,7 +2286,7 @@ function tickText(S){
       all: `🔄 ${n} ${me ? 'hast' : 'hat'} alle 3 getauscht`,
       blind: `🙈 ${n} ${me ? 'hast' : 'hat'} blind getauscht`,
       pass: `👉 ${n} ${me ? 'schiebst' : 'schiebt'}`,
-      knock: S.knock ? '' : `✊ ${n} ${me ? 'klopfst' : 'klopft'}!`
+      knock: L.also ? `✊ ${n} ${me ? 'klopfst' : 'klopft'} auch` : S.knock ? '' : `✊ ${n} ${me ? 'klopfst' : 'klopft'}!`
     }[L.type] || '';
     if (L.refresh) t += '<br>🔁 Alle haben geschoben – 3 neue Karten';
   }
@@ -2347,7 +2354,7 @@ function renderControls(S){
     else if (ui.selM != null) h = '<span>Und jetzt die Karte, die du dafür hergibst.</span>';
     else if (ui.selB) h = '<span>Welche Karte gibst du für die verdeckte her?</span>';
     else h = `<span>Tauschen: tipp eine deiner Karten und eine in der Mitte${blind ? ' (oder die verdeckte)' : ''}.</span>`;
-    if (S.knock) h += `<span class="small">✊ Letzte Runde – danach wird aufgedeckt</span>`;
+    if (S.knock) h += '<span class="small">✊ Letzte Runde: tauschen oder auch klopfen und die Karten behalten</span>';
     else if (!mayKnock(S)) h += '<span class="small">✊ Klopfen geht erst, wenn jeder einmal dran war</span>';
   } else if (coverNeeded(S)) h = `<span>📱 Gib das Handy an <b>${name}</b></span>`;
   else if (p && isAway(p)) h = `<span><b>${name}</b> ist offline</span><span class="small">ein Bot spielt gleich für ${name} …</span>`;
