@@ -643,7 +643,8 @@ const MQTT_URL = 'https://cdn.jsdelivr.net/npm/mqtt@5.10.4/dist/mqtt.min.js';
 // öffentliche Nachrichten-Server (erster erreichbarer wird genommen)
 const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://test.mosquitto.org:8081/mqtt', 'wss://broker.hivemq.com:8884/mqtt'];
 const QR_URL = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
-const T = {deal: 1500, dealer: 1500, think: 1300, ackShow: 12000, ackBot: 7000, ackLast: 12000, showDelay: 900};
+// ackShow/ackBot/ackLast: so lange bleibt die Abrechnung nach jeder Runde offen (Mensch / Bot gibt als Nächstes / Spielende)
+const T = {deal: 1500, dealer: 1500, think: 1300, ackShow: 25000, ackBot: 15000, ackLast: 25000, showDelay: 900};
 
 function loadJSON(k){ try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function saveJSON(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
