@@ -240,7 +240,13 @@ details.rules[open] summary::after{content:"–"}
 .seat.lose{box-shadow:0 0 0 2px var(--red);background:rgba(255,90,95,.12)}
 .seat-top{display:flex;align-items:center;gap:5px;min-width:0}
 .seat-name{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
-.seat-row{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:var(--och)}
+.seat-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2px 4px;min-height:var(--och)}
+.opps.many{gap:5px}
+.opps.many .seat{padding:4px 5px 5px;gap:3px;border-radius:10px}
+.opps.many .seat-name{font-size:11.5px}
+.opps.many .kk,.opps.many .wings{width:11px;height:11px}
+.opps.many .puck{width:14px;height:14px;font-size:9px;line-height:14px}
+.opps.many .chip-act{font-size:10px;padding:1px 5px;min-height:14px;line-height:12px}
 .mini{display:flex;--cw:var(--ocw);--ch:var(--och);min-width:0}
 .mini .card:not(:last-child){margin-right:calc(var(--cw) * -.3)}
 .seat-out{font-size:12px;color:var(--muted);font-weight:700}
@@ -438,6 +444,7 @@ details.rules[open] summary::after{content:"–"}
           <button class="btn btn-ghost btn-sm" id="add-bot">＋ 🤖 Bot</button>
         </div>
         <p class="note">Spielen mehrere Leute an diesem Handy, kommt vor jedem Zug „Gib das Handy an …“ – so bleiben die Karten geheim.</p>
+        <p class="note" id="local-decks"></p>
       </div>
       <div class="panel" id="local-options"></div>
       <button class="btn btn-primary" id="local-start">Spiel starten 🃏</button>
@@ -466,6 +473,7 @@ details.rules[open] summary::after{content:"–"}
         <h2>Mitspieler</h2>
         <div class="plist" id="host-players"></div>
         <div class="addrow"><button class="btn btn-ghost btn-sm" id="host-add-bot">＋ 🤖 Bot dazu</button><button class="btn btn-ghost btn-sm chat-open-btn" data-open-chat>💬 Chat<span class="chat-badge hidden"></span></button></div>
+        <p class="note" id="host-decks"></p>
       </div>
       <div class="panel" id="host-options"></div>
       <button class="btn btn-primary" id="host-start" disabled>Spiel starten 🃏</button>
@@ -592,6 +600,7 @@ details.rules[open] summary::after{content:"–"}
     <li><b>Alle schieben</b> (wenn Schieben erlaubt ist): Schieben alle hintereinander, kommen 3 neue Karten in die Mitte.</li>
     <li><b>Gleichstand:</b> Haben mehrere gleich wenig, verlieren alle davon einen Kronkorken. Haben alle gleich viel, verliert keiner.</li>
     <li><b>Verdeckte Karte</b> (wenn eingestellt): Der Geber legt zum Schluss eine verdeckte Karte neben die Mitte. Statt einer offenen darfst du sie nehmen, ohne sie zu kennen – deine abgelegte Karte wird die neue verdeckte.</li>
+    <li><b>Viele Spieler:</b> Mit einem Deck (32 Karten) können bis zu 9 Leute spielen. Ab 10 Spielern kommt automatisch ein zweites Deck dazu – dann gibt's jede Karte doppelt. Mehr als 31 Punkte zählen trotzdem nicht, und eine Hosn ist immer genau eine Sau mit zwei Zehnerkarten.</li>
     <li><b>Schwimmen:</b> Hast du keinen Kronkorken mehr, bekommst du Schwimmflügerl und spielst weiter. Verlierst du noch einmal, bist du ertrunken 🫧.</li>
   </ul>
 
@@ -607,6 +616,7 @@ details.rules[open] summary::after{content:"–"}
   <h4>Mitspielen</h4>
   <ul class="rules-list">
     <li><b>🍻 Rundum geben:</b> Ein Handy geht reihum. Vor jedem Zug kommt „Gib das Handy an …“ – die anderen schauen weg. Auch mit 🤖 Bots: „Gemütlich“ spielt nach Gefühl, „Gfinkelt“ rechnet genau.</li>
+    <li><b>👥 Bis zu 16 Spieler</b> – ab 10 wird automatisch mit 2 Decks gespielt.</li>
     <li><b>📡 Online:</b> Einer tippt auf „Spiel erstellen“, die anderen treten per Code, Link oder QR-Code bei. Wer mitten im Spiel dazukommt, steigt in der nächsten Runde ein – mit so vielen Kronkorken wie der Schlechteste am Tisch.</li>
     <li><b>📴 Weg vom Handy:</b> Ist jemand offline, spielt nach ein paar Sekunden ein Bot für ihn – bis er wieder da ist.</li>
   </ul>
@@ -637,7 +647,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const KEY = {setup: 'hob.setup.v1', local: 'hob.local.v1', host: 'hob.host.v1', cid: 'hob.cid', join: 'hob.join.v1'};
-const MAX_PLAYERS = 9; // 32 Karten: 9 × 3 auf der Hand, 3 in der Mitte, 1 verdeckt
+const MAX_PLAYERS = 16; // ab 10 Spielern wird automatisch mit 2 Decks gespielt
 const TOPIC_PREFIX = 'hosnobe/v1/';
 const MQTT_URL = 'https://cdn.jsdelivr.net/npm/mqtt@5.10.4/dist/mqtt.min.js';
 // öffentliche Nachrichten-Server (erster erreichbarer wird genommen)
@@ -687,7 +697,7 @@ const SUIT_NAMES = ['Herz', 'Schelle', 'Eichel', 'Blatt'];
 const PTS = [6, 7, 8, 9, 10, 10, 10, 10, 11];
 const BOT_LEVELS = {gemuetlich: 'Gemütlich', gfinkelt: 'Gfinkelt'};
 const BOT_DESC = {gemuetlich: 'spielt nach Gefühl', gfinkelt: 'rechnet genau'};
-const BOT_NAMES = ['Robo-Sepp', 'Robo-Resi', 'Robo-Ferdl', 'Robo-Mitzi', 'Robo-Poldi', 'Robo-Gretl', 'Robo-Wastl', 'Robo-Burgi', 'Robo-Hansi', 'Robo-Kathi', 'Robo-Lois', 'Robo-Vroni'];
+const BOT_NAMES = ['Robo-Sepp', 'Robo-Resi', 'Robo-Ferdl', 'Robo-Mitzi', 'Robo-Poldi', 'Robo-Gretl', 'Robo-Wastl', 'Robo-Burgi', 'Robo-Hansi', 'Robo-Kathi', 'Robo-Lois', 'Robo-Vroni', 'Robo-Gusti', 'Robo-Liesl', 'Robo-Maxi', 'Robo-Fanni'];
 const FIG_NAMES = {5: ['Kuoni d. Hirt', 'Itell Reding', 'Rudolf Harras', 'Walter Fürst'], 6: ['Hermann Gessler', 'Stüssi d. Flurschütz', 'Wilhelm Tell', 'Ulrich Rudenz'],
   8: ['Frühling', 'Sommer', 'Winter', 'Herbst']};
 const cardName = c => `${SUIT_NAMES[c.s]}-${RANK_LONG[c.r]}`;
@@ -1099,10 +1109,13 @@ function gameOpts(o){
     firstKnock: o.firstKnock === undefined ? OPT_DEFAULT.firstKnock : !!o.firstKnock
   };
 }
-// 32 Karten: Siebener bis Sau
-function makeDeck(){
+// Ein Deck hat 32 Karten (Siebener bis Sau). Pro Runde braucht man 3 je Spieler, 3 für die Mitte und 1 verdeckte –
+// mit einem Deck reicht das für höchstens 9 Spieler, darüber kommt automatisch ein weiteres Deck dazu.
+const decksFor = n => Math.max(1, Math.ceil((3 * n + 4) / 32));
+const decksText = d => `${d} ${d === 1 ? 'Deck' : 'Decks'} (${d * 32} Karten)`;
+function makeDeck(decks = 1){
   const d = [];
-  for (let r = 1; r < 9; r++) for (let s = 0; s < 4; s++) d.push({id: r * 4 + s, r, s});
+  for (let k = 0; k < decks; k++) for (let r = 1; r < 9; r++) for (let s = 0; s < 4; s++) d.push({id: k * 36 + r * 4 + s, r, s});
   return shuffle(d);
 }
 // Wert eines Blatts. rank ordnet: Feuer > Hosn > 31 ohne Hosn > Drei Gleiche (30½) > Punkte
@@ -1114,11 +1127,13 @@ function handInfo(h, ten){
     const v = h.reduce((a, c) => a + (c.s === s ? PTS[c.r] : 0), 0);
     if (v > pts){ pts = v; suit = s; }
   }
-  if (pts === 31){ // geht nur mit Sau + zwei Zehnerkarten derselben Farbe
-    const hosn = ten || !h.some(c => c.r === 4);
-    return {pts, rank: hosn ? 32 : 31, kind: hosn ? 'hosn' : 'x31', suit};
-  }
+  // mit mehreren Decks gibt's Karten doppelt (z. B. zwei Herz-Sau) – mehr als 31 zählt trotzdem nicht
+  pts = Math.min(pts, 31);
+  // Hosn: genau eine Sau und zwei Zehnerkarten derselben Farbe (den Zehner nur, wenn eingestellt)
+  const hosn = h.every(c => c.s === suit) && h.filter(c => c.r === 8).length === 1 && h.filter(c => c.r >= 4 && c.r <= 7 && (ten || c.r !== 4)).length === 2;
+  if (hosn) return {pts: 31, rank: 32, kind: 'hosn', suit};
   if (h[0].r === h[1].r && h[1].r === h[2].r) return {pts: 30.5, rank: 30.5, kind: 'drei', suit: -1};
+  if (pts === 31) return {pts, rank: 31, kind: 'x31', suit};
   return {pts, rank: pts, kind: 'farbe', suit};
 }
 const fmtPts = v => v === 30.5 ? '30½' : String(v);
@@ -1186,7 +1201,8 @@ function startRound(s){
   const minCaps = alive0.length ? Math.min(...alive0.map(i => s.players[i].caps)) : s.opts.caps;
   s.players.forEach(p => { if (p.wait){ p.wait = false; p.watch = false; p.out = false; p.caps = minCaps; } });
   if (!inGame(s.players[s.dealer])) s.dealer = nextAlive(s, s.dealer);
-  s.deck = makeDeck(); s.pile = []; s.mid = []; s.blind = null;
+  s.decks = decksFor(aliveIdx(s).length);
+  s.deck = makeDeck(s.decks); s.pile = []; s.mid = []; s.blind = null;
   s.round++; s.turns = 0; s.passes = 0; s.knock = null; s.last = null; s.result = null;
   // Der Geber teilt reihum aus – links von ihm beginnend, sich selbst zuletzt
   const order = [];
@@ -1380,7 +1396,7 @@ class Host {
     const s = this.s, alive = aliveIdx(s);
     const rows = alive.map(i => ({i, hand: s.players[i].hand.slice(), info: handInfo(s.players[i].hand, s.opts.ten), fate: null}));
     let losers;
-    if (trigger === 'feuer') losers = alive.filter(i => i !== by);
+    if (trigger === 'feuer') losers = rows.filter(r => r.info.kind !== 'feuer').map(r => r.i);
     else {
       const min = Math.min(...rows.map(r => r.info.rank));
       losers = rows.filter(r => r.info.rank === min).map(r => r.i);
@@ -1741,6 +1757,9 @@ function nextBotName(list){
   return BOT_NAMES.find(n => !used.has(n)) || `Robo-${list.length + 1}`;
 }
 function rulesHTML(){ return $('#rules-tpl').innerHTML; }
+// bis 9 Spieler reicht ein Deck, darüber kommt automatisch eins dazu
+const deckNote = n => `🃏 ${n} Spieler – gespielt wird mit ${decksText(decksFor(n))}` +
+  (decksFor(n) > 1 ? '. Jede Karte gibt\'s dann doppelt.' : n >= 7 ? '. Ab 10 Spielern kommt automatisch ein zweites Deck dazu.' : '.');
 const optsSummary = o => [`${o.caps} Kronkorken`, o.pass ? 'einmal schieben pro Runde' : 'kein Schieben',
   o.firstKnock ? 'Klopfen sofort erlaubt' : 'kein Klopfen in der ersten Runde', `${o.blind ? 'mit' : 'ohne'} verdeckter Karte`,
   `Zehner ${o.ten ? 'zählt' : 'zählt nicht'} zur Hosn`].join(' · ');
@@ -1843,6 +1862,7 @@ function renderLocalSetup(){
       `<button class="pdel" data-act="del" aria-label="Entfernen"${setup.players.length <= 2 ? ' disabled style="opacity:.3"' : ''}>✕</button></div>`;
   }).join('');
   $('#add-human').disabled = $('#add-bot').disabled = setup.players.length >= MAX_PLAYERS;
+  $('#local-decks').textContent = deckNote(setup.players.length);
   $('#local-options').innerHTML = optionsHTML('local');
 }
 $('#local-players').addEventListener('input', e => {
@@ -1925,6 +1945,7 @@ function renderLobby(){
   }).join('') + (L.players.length === 1 ? '<p class="small" style="margin-top:6px">Noch niemand da – teile den Code oder Link, oder nimm Bots dazu.</p>' : '');
   $('#host-add-bot').disabled = L.players.length >= MAX_PLAYERS;
   $('#host-start').disabled = !net.code || lobbyPlaying(L) < 2;
+  $('#host-decks').textContent = deckNote(lobbyPlaying(L));
   $('#host-options').innerHTML = optionsHTML('host');
 }
 wireOptions($('#host-options'), 'host');
@@ -2223,7 +2244,9 @@ function renderOpps(S){
   const v = viewIdx(S), el = $('#opps');
   const seats = S.players.map((p, i) => ({p, i})).filter(({p, i}) => i !== v && !p.watch);
   const n = seats.length;
-  el.style.setProperty('--oc', n <= 3 ? Math.max(1, n) : n === 4 ? 2 : 3);
+  const cols = n <= 3 ? Math.max(1, n) : n === 4 ? 2 : n <= 9 ? 3 : 4;
+  el.style.setProperty('--oc', cols);
+  el.classList.toggle('many', cols >= 4);
   const show = S.phase === 'show' && S.result;
   const html = seats.map(({p, i}) => {
     let cards = '';
@@ -2234,7 +2257,7 @@ function renderOpps(S){
     const lose = r && r.fate;
     const dot = app.mode !== 'local' && !p.bot ? `<span class="dot${p.online ? ' on' : ''}"></span>` : '';
     return `<div class="seat${actorIdx(S) === i ? ' cur' : ''}${p.out && !r ? ' out' : ''}${lose ? ' lose' : ''}">` +
-      `<div class="seat-top">${i === S.dealer ? '<span class="puck" title="Geber">G</span>' : ''}<span class="seat-name">${isAuto(p) ? '🤖 ' : ''}${esc(p.name)}</span>${dot}</div>` +
+      `<div class="seat-top">${i === S.dealer ? '<span class="puck" title="Geber">G</span>' : ''}<span class="seat-name">${isAuto(p) && cols < 4 ? '🤖 ' : ''}${esc(p.name)}</span>${dot}</div>` +
       `<div class="seat-row"><div class="mini">${cards}</div>${p.out && !r ? '' : capsHTML(p, S.opts.caps)}</div>${seatChip(S, p, i)}</div>`;
   }).join('');
   if (ui.oppsHTML !== html){ ui.oppsHTML = html; el.innerHTML = html; }
@@ -2514,7 +2537,7 @@ $('#btn-menu').onclick = async () => {
   ui.modalSeq = null; ui.coverKey = null;
   const quitLabel = app.mode === 'guest' ? 'Spiel verlassen' : 'Spiel beenden';
   const v = await showModal({tag: 'menu', title: 'Pause',
-    body: `<p class="small" style="margin-bottom:12px">Runde ${S.round} · ${optsSummary(S.opts)}${app.mode !== 'local' ? ' · Code ' + esc(net.code || '') : ''}</p>` +
+    body: `<p class="small" style="margin-bottom:12px">Runde ${S.round} · ${decksText(S.decks || 1)} · ${optsSummary(S.opts)}${app.mode !== 'local' ? ' · Code ' + esc(net.code || '') : ''}</p>` +
       `<ul class="sips" id="menu-list">${playerListHTML(S, true)}</ul>` +
       `<div class="togglerow"><span>Buchstaben auf Bildkarten<small>U, O, K und Sau in der Ecke</small></span><button class="toggle" role="switch" id="menu-idx" aria-checked="${setup.idx}" aria-label="Buchstaben auf Bildkarten"></button></div>` +
       `<details class="rules"><summary>Spielregeln</summary><div class="rules-body">${rulesHTML()}</div></details>`,
@@ -2703,8 +2726,8 @@ function fitCards(){
   const H = scr.clientHeight, W = Math.min(scr.clientWidth, 560);
   const cols = +getComputedStyle($('#opps')).getPropertyValue('--oc') || 3;
   const root = document.documentElement.style;
-  root.setProperty('--ocw', cols >= 3 ? '20px' : '24px');
-  root.setProperty('--och', cols >= 3 ? '30px' : '36px');
+  root.setProperty('--ocw', cols >= 4 ? '15px' : cols >= 3 ? '20px' : '24px');
+  root.setProperty('--och', cols >= 4 ? '22px' : cols >= 3 ? '30px' : '36px');
   const fixed = $('.hud').offsetHeight + $('#opps').offsetHeight + $('.controls').offsetHeight + $('#me-head').offsetHeight + $('#tick').offsetHeight + 54;
   const free = Math.max(170, H - fixed);
   const blind = app.S && app.S.opts.blind;
@@ -2854,7 +2877,7 @@ const live = {
     if (!text){ this.seen.delete(id); this.render(); return; }
     let m; try { m = JSON.parse(text); } catch (e) { return; }
     const n = Math.round(+m.n), p = Math.round(+m.p);
-    if (!(n >= 1 && n <= 12 && p >= 0 && p <= n)) return;
+    if (!(n >= 1 && n <= MAX_PLAYERS && p >= 0 && p <= n)) return;
     // gespeicherte Meldungen können alt sein: dann zählt der mitgeschickte Zeitstempel, sonst der Empfang
     const t = retained ? Math.min(+m.t || 0, Date.now()) : Date.now();
     const old = this.seen.get(id);
